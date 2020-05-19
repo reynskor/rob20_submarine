@@ -96,7 +96,7 @@ while robot.step(timeStep) != -1:
     # Read the sensors:
     roll, pitch, heading = IMUsensor.getRollPitchYaw() 
     xpos, altitude , zpos = GPSsensor.getValues()
-    roll_vel, pitch_vel, bleh =GYROsensor.getValues()
+    roll_vel, bleh, pitch_vel =GYROsensor.getValues()
     print(str(roll)+"\t"+str(pitch)+"\t"+str(heading))
     xSpeed=(xpos-xpos_old)/timeStep
     ySpeed=(altitude-altitude_old)/timeStep
