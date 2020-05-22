@@ -129,7 +129,7 @@ k_yaw_d = 300
 #  motor = robot.getMotor('motorname')
 #  ds = robot.getDistanceSensor('dsname')
 #  ds.enable(timestep)
-target_altitude = 6.0
+target_altitude = 9.0
 k_vertical_thrust = 398.3476#187.28#592.2569#398.3476#327.3495#128.1189 # with this thrust, the drone lifts.
 #k_vertical_offset = 0.1   # Vertical offset where the robot actually targets to stabilize itself.
 k_vertical_p = 300       # P constant of the vertical PID.
@@ -153,6 +153,7 @@ car_mode = False
 altitude_bool=False
 angle_dist = 0.785398
 angle_lock = -2.0944
+logger=False
 #ROS#depth_msg = Float32()
 pi = math.pi
 # Main loop:
@@ -214,8 +215,6 @@ while robot.step(timeStep) != -1:
 #ROS#    bleh_pub.publish(bleh)
     drive = 0
     side = 0
-    left=0
-    right=0
     car_trun=0
     yaw_stop=1
     key=KeyB.getKey()
@@ -259,10 +258,18 @@ while robot.step(timeStep) != -1:
             drone_mode = False
             atache_mode = False
             car_mode = False
+        if (key==ord('N')):
+            f = open("test2.txt", "w")
+            f.write("xpos,ypos,zpos\n")
+            logger=True
+        if (key==ord('M')):
+            f.close()
+            logger=False
         key=KeyB.getKey()
     
     # Process sensor data here.
-
+    if logger==True:
+        f.write(str(xpos)+","+str(altitude)+","+str(zpos)+"\n")
     if (drone_mode==True):
             #print(str(roll)+"\t"+str(pitch)+"\t"+str(heading))
     #print(str(roll)+"\t"+str(roll_vel))
@@ -296,7 +303,7 @@ while robot.step(timeStep) != -1:
     #vertical_input = 0# k_vertical_p * pow(clamped_difference_altitude, 3.0);
     #0.2635 #0.266  #0.2635 #0.266  #roll distance
     #0.3582 #0.3582 #0.3346 #0.3346 #pitch distance
-        print(str(vertical_input)+"\t"+str(roll_input)+"\t"+str(pitch_input))
+        #print(str(vertical_input)+"\t"+str(roll_input)+"\t"+str(pitch_input))
         front_left_motor_input =k_vertical_thrust + vertical_input + roll_input + (0.321/0.246)*pitch_input - yaw_input
         front_right_motor_input=k_vertical_thrust + vertical_input - roll_input + (0.321/0.246)*pitch_input + yaw_input
         rear_left_motor_input  =k_vertical_thrust + vertical_input + roll_input - (0.321/0.246)*pitch_input + yaw_input
@@ -315,7 +322,7 @@ while robot.step(timeStep) != -1:
             vertical_input=0
             lock_on=-2
         roll_input = k_roll_p * (angle_lock*side-roll) - k_roll_d*roll_vel
-        pitch_input = (k_pitch_p *(angle_lock*drive-pitch) - k_pitch_d*pitch_vel)
+        pitch_input = (k_pitch_p *(-1.48353*drive-pitch) - k_pitch_d*pitch_vel)
     #print("pitch_input: "+str(pitch_input)+"\t velocity: "+str(pitch_vel))
     #print(str(yaw_disturbance)+"  \t"+str(heading)+"  \t"+str(yaw_error))
         front_left_motor_input =lock_on*k_vertical_thrust + vertical_input + roll_input + (0.321/0.246)*pitch_input
@@ -328,10 +335,10 @@ while robot.step(timeStep) != -1:
         front_right_motor_input=-2*k_vertical_thrust+car_trun*400
         rear_left_motor_input  =-2*k_vertical_thrust+car_trun*400
         rear_right_motor_input =-2*k_vertical_thrust-car_trun*400
-        fl_wheel=10*drive+10*side
-        fr_wheel=10*drive-10*side
-        rl_wheel=10*drive+10*side
-        rr_wheel=10*drive-10*side
+        fl_wheel=4*drive+4*side
+        fr_wheel=4*drive-4*side
+        rl_wheel=4*drive+4*side
+        rr_wheel=4*drive-4*side
         #print(str(k_vertical_thrust)+"  \t"+str(roll_input))
     else :
         front_left_motor_input =2*k_vertical_thrust

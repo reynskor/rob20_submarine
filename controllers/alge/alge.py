@@ -41,10 +41,10 @@ display.imagePaste(background, 0, 0, False)#wb_display_image_paste(display, back
 display.setAlpha(0.0)#wb_display_set_alpha(display, 0.0);
 brush_radius = 50
 boat_x_location = 0
-boat_y_location = 9.2
+boat_y_location = 8
 boat_x_size = 7
 boat_y_size = 3
-
+adsf=False
 def translate(value, leftMin, leftMax, rightMin, rightMax): 
     # Figure out how 'wide' each range is 
     leftSpan = leftMax - leftMin 
@@ -61,7 +61,7 @@ while supervisor.step(timestep) != -1:
     #  val = ds.getValue()
     x_pos, y_pos, z_pos = trans_field.getSFVec3f()#const double *translation = wb_supervisor_field_get_sf_vec3f(translationField);
     x_rot, y_rot, z_rot, angle = rot_field.getSFRotation()
-    if z_pos>1.7:
+    if z_pos>1.7 and abs(x_pos)<4 and ((abs(y_pos-8))<2):
         x_img=translate(x_pos,boat_x_location-boat_x_size/2,boat_x_location+boat_x_size/2,0,2048)
         y_img=translate(y_pos,boat_y_location-boat_y_size/2,boat_y_location+boat_y_size/2,0,1024)
     #print(str(translate(x_pos,-3.5,3.5,0,2048))+"\t"+str(translate(y_pos,3.5,6.5,0,1024)))
@@ -75,6 +75,10 @@ while supervisor.step(timestep) != -1:
         brush_y_offset = int(brush_radius*math.cos(q))
         display.fillOval(int(x_img)+brush_x_offset,int(y_img)-brush_y_offset,brush_radius,brush_radius)
         display.fillOval(int(x_img)-brush_x_offset,int(y_img)+brush_y_offset,brush_radius,brush_radius)
+        adsf=True
+        #display.imageSave(None,"clean.png")
+    elif adsf==True:
+        adsf=False
         #display.imageSave(None,"clean.png")
     #wb_display_fill_oval(display, width * (translation[X] + GROUND_X / 2) / GROUND_X,height * (translation[Z] + GROUND_Z / 2) / GROUND_Z, 7, 7);
     # Process sensor data here.
